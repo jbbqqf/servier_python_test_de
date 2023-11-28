@@ -1,0 +1,46 @@
+---
+default_language_version:
+  python: python3.8
+
+default_stages: [commit]
+
+repos:
+  # Apply a selection of the pre-commit built-in validators
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: end-of-file-fixer
+        exclude: src/dags/data
+      - id: trailing-whitespace
+        exclude: src/dags/data
+      - id: check-yaml
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-docstring-first
+
+  - repo: local
+    hooks:
+      - id: bandit
+        name: bandit
+        language: system
+        entry: bandit
+        types: ["python"]
+
+      - id: ruff
+        name: ruff
+        language: system
+        entry: ruff
+        types: ["python"]
+
+      - id: black
+        name: black
+        language: system
+        entry: black
+        types: ["python"]
+
+      - id: yamllint
+        name: yamllint
+        language: system
+        entry: yamllint --strict
+        types: ["yaml"]
+        args: [--strict, -c, .yamllint_config.yaml]

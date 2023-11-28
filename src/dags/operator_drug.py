@@ -1,11 +1,12 @@
-from airflow.models.baseoperator import BaseOperator
-from airflow.utils.context import Context
-import pandas as pd
-import json5
+import os
 import shutil
 from typing import Any, List
-import os
+
+import json5
+import pandas as pd
 import utils
+from airflow.models.baseoperator import BaseOperator
+from airflow.utils.context import Context
 
 
 class CopyFileOperator(BaseOperator):

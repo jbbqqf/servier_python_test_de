@@ -1,18 +1,17 @@
 import os
 from datetime import datetime
-from airflow import DAG
-from airflow.sensors.filesystem import FileSensor
 
 import constant
+from airflow import DAG
+from airflow.sensors.filesystem import FileSensor
 from operator_drug import (
-    CopyFileOperator,
-    DrugsSilverOperator,
     ClinicalTrialsSilverOperator,
+    CopyFileOperator,
+    DrugGraphGoldOperator,
+    DrugsSilverOperator,
     PubmedMergeOperator,
     PubmedSilverOperator,
-    DrugGraphGoldOperator,
 )
-
 
 with DAG(
     dag_id="drug",

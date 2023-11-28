@@ -1,6 +1,6 @@
 import os
-from airflow.configuration import conf
 
+from airflow.configuration import conf
 
 DAGS_FOLDER = conf.get("core", "dags_folder")
 

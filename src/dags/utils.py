@@ -1,8 +1,9 @@
+import re
 from typing import Any
 from uuid import uuid4
-import re
-from dateutil.parser import parse
+
 import pandas as pd
+from dateutil.parser import parse
 
 
 def ensure_id(id_: Any) -> str:
