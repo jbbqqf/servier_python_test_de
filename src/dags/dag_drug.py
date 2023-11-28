@@ -8,6 +8,7 @@ from operator_drug import (
     CopyFileOperator,
     DrugsSilverOperator,
     ClinicalTrialsSilverOperator,
+    PubmedMergeOperator,
     PubmedSilverOperator,
     DrugGraphGoldOperator,
 )
@@ -36,6 +37,8 @@ with DAG(
 
     drugs_silver = DrugsSilverOperator(
         task_id="drugs_silver",
+        source_file=constant.BRONZE_DRUGS_FILE,
+        destination_file=constant.SILVER_DRUGS_FILE,
     )
 
     clinical_trials_sensor = FileSensor(
@@ -57,6 +60,8 @@ with DAG(
 
     clinical_trials_silver = ClinicalTrialsSilverOperator(
         task_id="clinical_trials_silver",
+        source_file=constant.BRONZE_CLINICAL_TRIALS_FILE,
+        destination_file=constant.SILVER_CLINICAL_TRIALS_FILE,
     )
 
     pubmed_a_sensor = FileSensor(
@@ -89,8 +94,16 @@ with DAG(
         destination_path=constant.BRONZE_PUBMED_B_FILE,
     )
 
+    pubmed_merge_silver = PubmedMergeOperator(
+        task_id="pubmed_merge_silver",
+        source_files=[constant.BRONZE_PUBMED_A_FILE, constant.BRONZE_PUBMED_B_FILE],
+        destination_file=constant.SILVER_PUBMED_MERGED_FILE,
+    )
+
     pubmed_silver = PubmedSilverOperator(
         task_id="pubmed_silver",
+        source_file=constant.SILVER_PUBMED_MERGED_FILE,
+        destination_file=constant.SILVER_PUBMED_FILE,
     )
 
     drug_graph_gold = DrugGraphGoldOperator(

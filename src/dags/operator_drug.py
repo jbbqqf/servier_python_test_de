@@ -3,13 +3,14 @@ from airflow.utils.context import Context
 import pandas as pd
 import json5
 import shutil
-from typing import Any
+from typing import Any, List
 import os
-import constant
+import utils
 
 
 class CopyFileOperator(BaseOperator):
-    # TODO: document that the API is similar to GCStoGCSOperator
+    # The API of this operator has been designed to look like GCSToGCSOperator.
+    # This will ease the rewrite because we will realistically not process local files in production.
     def __init__(
         self,
         source_folder,
@@ -32,57 +33,121 @@ class CopyFileOperator(BaseOperator):
 
 
 class DrugsSilverOperator(BaseOperator):
-    # TODO: make reusable with parameters
     def __init__(
         self,
+        source_file,
+        destination_file,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
+        self.source_file = source_file
+        self.destination_file = destination_file
 
     def execute(self, context: Context) -> Any:
-        data = pd.read_csv(constant.BRONZE_DRUGS_FILE)
-        data["drug"] = data["drug"].str.lower()
+        data = pd.read_csv(self.source_file)
+
+        data["atccode"] = data["atccode"].astype("string")
+        data["drug"] = data["drug"].astype("string")
+
         data.to_json(
-            constant.SILVER_DRUGS_FILE, orient="records", force_ascii=False, indent=2
+            self.destination_file, orient="records", force_ascii=False, indent=2
         )
 
 
 class ClinicalTrialsSilverOperator(BaseOperator):
-    # TODO: make reusable with parameters
     def __init__(
         self,
+        source_file,
+        destination_file,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
+        self.source_file = source_file
+        self.destination_file = destination_file
 
     def execute(self, context: Context) -> Any:
-        bronze_data = pd.read_csv(constant.BRONZE_CLINICAL_TRIALS_FILE)
-        # TODO: clean and filter
-        bronze_data.to_json(
-            constant.SILVER_CLINICAL_TRIALS_FILE,
+        data = pd.read_csv(self.source_file)
+
+        data["id"] = utils.clean_id(data["id"])
+        data["scientific_title"] = utils.clean_title(data["scientific_title"])
+        data["date"] = utils.clean_date(data["date"])
+        data["journal"] = utils.clean_journal(data["journal"])
+
+        # This data cannot be processed
+        data = data.drop(data[data["scientific_title"] == ""].index)
+        data = data.drop(data[data["journal"] == ""].index)
+
+        data.to_json(
+            self.destination_file,
             orient="records",
             force_ascii=False,
             indent=2,
         )
 
 
-class PubmedSilverOperator(BaseOperator):
-    # TODO: make reusable with parameters
+class PubmedMergeOperator(BaseOperator):
     def __init__(
         self,
+        source_files: List[str],
+        destination_file: str,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
+        self.source_files = source_files
+        self.destination_file = destination_file
 
     def execute(self, context: Context) -> Any:
-        bronze_a_data = pd.read_csv(constant.BRONZE_PUBMED_A_FILE)
-        with open(constant.BRONZE_PUBMED_B_FILE) as f:
-            bronze_json_data = json5.loads(f.read())
-        bronze_b_data = pd.DataFrame.from_dict(bronze_json_data)
-        # TODO: clean and filter
-        bronze_data = pd.concat([bronze_a_data, bronze_b_data])
-        bronze_data.to_json(
-            constant.SILVER_PUBMED_FILE, orient="records", force_ascii=False, indent=2
+        data_to_concat = []
+
+        for source_file in self.source_files:
+            if source_file.endswith(".csv"):
+                data = pd.read_csv(source_file)
+                data_to_concat.append(data)
+
+            elif source_file.endswith(".json"):
+                with open(source_file) as f:
+                    # json5 parses trailing commas found in pubmed files
+                    data = json5.loads(f.read())
+                data_to_concat.append(pd.DataFrame.from_dict(data))
+
+            else:
+                # Do not let failures go undetected
+                raise ValueError("Expecting either csv or json file")
+
+        merged_data = pd.concat(data_to_concat)
+        merged_data.to_json(
+            self.destination_file, orient="records", force_ascii=False, indent=2
+        )
+
+
+class PubmedSilverOperator(BaseOperator):
+    def __init__(
+        self,
+        source_file,
+        destination_file,
+        **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.source_file = source_file
+        self.destination_file = destination_file
+
+    def execute(self, context: Context) -> Any:
+        data = pd.read_json(self.source_file)
+
+        data["id"] = utils.clean_id(data["id"])
+        data["title"] = utils.clean_title(data["title"])
+        data["date"] = utils.clean_date(data["date"])
+        data["journal"] = utils.clean_journal(data["journal"])
+
+        # This data could not be processed (even if those cases have not been witnessed)
+        data = data.drop(data[data["title"] == ""].index)
+        data = data.drop(data[data["journal"] == ""].index)
+
+        data.to_json(
+            self.destination_file,
+            orient="records",
+            force_ascii=False,
+            indent=2,
         )
 
 
