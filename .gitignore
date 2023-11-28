@@ -1,0 +1,18 @@
+# Python
+**/*.pyc
+venv*
+
+# Airflow
+/src/airflow-webserver.pid
+/src/airflow.cfg
+/src/airflow.db
+/src/airflow.db-journal
+/src/logs
+/src/standalone_admin_password.txt
+/src/webserver_config.py
+
+# Editors
+.DS_Store
+**/.DS_Store
+.idea/
+.vscode/
