@@ -1,2 +1,10 @@
-export AIRFLOW_HOME="/home/jbb/servier/python_test_de/src/"
-export AIRFLOW_HOME="/home/jbb/servier/python_test_de/src/"
+# Latest supported version by Google Cloud Composer
+# https://cloud.google.com/composer/docs/concepts/versioning/composer-versions#images
+apache-airflow==2.6.3
+
+# Required in an old version
+connexion==2.14.2
+
+# Directly used in the project
+pandas==2.0.3
+json5==0.9.14

@@ -11,6 +11,11 @@ venv*
 /src/standalone_admin_password.txt
 /src/webserver_config.py
 
+# Data
+/src/dags/data/bronze/*
+/src/dags/data/silver/*
+/src/dags/data/gold/*
+
 # Editors
 .DS_Store
 **/.DS_Store
