@@ -140,7 +140,7 @@ class PubmedSilverOperator(BaseOperator):
         data["date"] = utils.clean_date(data["date"])
         data["journal"] = utils.clean_journal(data["journal"])
 
-        # This data could not be processed (even if those cases have not been witnessed)
+        # This data could not be processed
         data = data.drop(data[data["title"] == ""].index)
         data = data.drop(data[data["journal"] == ""].index)
 

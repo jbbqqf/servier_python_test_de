@@ -20,6 +20,21 @@ with DAG(
     schedule_interval="@daily",
     catchup=False,
 ) as dag:
+    """
+    Sensors make sure that the data files are available. If they're not available after the timeout,
+    we want to be notified before the lab director sticks a post-it on our laptop "the data is wrong!".
+
+    In this scenario, I pretended that the external folder is where we need to pull the data from.
+
+    Then, we store the data in a bronze layer, or bronze folder. Bronze data is raw and still dirty.
+    But we can schedule backfill from it to investigate.
+
+    In the silver layer, the data is standardized, cleaned and filtered. Since we need to produce a
+    JSON file at the end, I opted to standardize everything in JSON.
+
+    In the gold layer, the data is aggregated and business oriented.
+    """
+
     drugs_sensor = FileSensor(
         task_id="drugs_sensor",
         filepath=os.path.join(constant.DAGS_FOLDER, constant.EXTERNAL_DRUGS_FILE),
@@ -123,4 +138,5 @@ pubmed_b_sensor >> pubmed_b_bronze >> pubmed_silver >> drug_graph_gold
 
 
 if __name__ == "__main__":
+    # Allow developers to run "python src/dags/dag_drug.py" to test the dag in dev
     dag.test()
