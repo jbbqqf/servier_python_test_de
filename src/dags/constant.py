@@ -24,6 +24,3 @@ SILVER_PUBMED_MERGED_FILE = os.path.join(SILVER_FOLDER, "pubmed_merged.json")
 SILVER_PUBMED_FILE = os.path.join(SILVER_FOLDER, "pubmed.json")
 
 GOLD_FOLDER = os.path.join("data", "gold")
-
-EXTERNAL_FILE_SENSOR_POKE_INTERVAL = 5
-EXTERNAL_FILE_SENSOR_POKE_TIMEOUT = 30

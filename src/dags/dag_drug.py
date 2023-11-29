@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 
 import constant
+import settings
 from airflow import DAG
 from airflow.sensors.filesystem import FileSensor
 from operator_drug import (
@@ -38,8 +39,8 @@ with DAG(
     drugs_sensor = FileSensor(
         task_id="drugs_sensor",
         filepath=os.path.join(constant.DAGS_FOLDER, constant.EXTERNAL_DRUGS_FILE),
-        poke_interval=constant.EXTERNAL_FILE_SENSOR_POKE_INTERVAL,
-        timeout=constant.EXTERNAL_FILE_SENSOR_POKE_TIMEOUT,
+        poke_interval=settings.EXTERNAL_FILE_SENSOR_POKE_INTERVAL,
+        timeout=settings.EXTERNAL_FILE_SENSOR_POKE_TIMEOUT,
     )
 
     drugs_bronze = CopyFileOperator(
@@ -61,8 +62,8 @@ with DAG(
         filepath=os.path.join(
             constant.DAGS_FOLDER, constant.EXTERNAL_CLINICAL_TRIALS_FILE
         ),
-        poke_interval=constant.EXTERNAL_FILE_SENSOR_POKE_INTERVAL,
-        timeout=constant.EXTERNAL_FILE_SENSOR_POKE_TIMEOUT,
+        poke_interval=settings.EXTERNAL_FILE_SENSOR_POKE_INTERVAL,
+        timeout=settings.EXTERNAL_FILE_SENSOR_POKE_TIMEOUT,
     )
 
     clinical_trials_bronze = CopyFileOperator(
@@ -82,8 +83,8 @@ with DAG(
     pubmed_a_sensor = FileSensor(
         task_id="pubmed_a_sensor",
         filepath=os.path.join(constant.DAGS_FOLDER, constant.EXTERNAL_PUBMED_A_FILE),
-        poke_interval=constant.EXTERNAL_FILE_SENSOR_POKE_INTERVAL,
-        timeout=constant.EXTERNAL_FILE_SENSOR_POKE_TIMEOUT,
+        poke_interval=settings.EXTERNAL_FILE_SENSOR_POKE_INTERVAL,
+        timeout=settings.EXTERNAL_FILE_SENSOR_POKE_TIMEOUT,
     )
 
     pubmed_a_bronze = CopyFileOperator(
@@ -97,8 +98,8 @@ with DAG(
     pubmed_b_sensor = FileSensor(
         task_id="pubmed_b_sensor",
         filepath=os.path.join(constant.DAGS_FOLDER, constant.EXTERNAL_PUBMED_B_FILE),
-        poke_interval=constant.EXTERNAL_FILE_SENSOR_POKE_INTERVAL,
-        timeout=constant.EXTERNAL_FILE_SENSOR_POKE_TIMEOUT,
+        poke_interval=settings.EXTERNAL_FILE_SENSOR_POKE_INTERVAL,
+        timeout=settings.EXTERNAL_FILE_SENSOR_POKE_TIMEOUT,
     )
 
     pubmed_b_bronze = CopyFileOperator(
