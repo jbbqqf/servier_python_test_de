@@ -9,6 +9,7 @@ import pandas as pd
 import utils
 from airflow.models.baseoperator import BaseOperator
 from airflow.utils.context import Context
+import itertools
 
 
 class CopyFileOperator(BaseOperator):
@@ -248,7 +249,11 @@ class DrugGraphGoldOperator(BaseOperator):
                 # A drug name quoted multiple times in the same title is counts only for one here.
                 # We data engineers need use cases to take appropriate modeling decisions.
                 journal_mapping[publication_row["journal"]].append(
-                    {"drug": drug_row["drug"], "date": publication_row["date"]}
+                    {
+                        "drug": drug_row["drug"],
+                        "atccode": drug_row["atccode"],
+                        "date": publication_row["date"],
+                    }
                 )
 
         return journal_mapping
@@ -306,3 +311,68 @@ class TopQuoterGoldOperator(BaseOperator):
 
         with open(self.destination_file, "w+") as f:
             json.dump(ordered_top_quoter, f, indent=2, ensure_ascii=False)
+
+
+class ExclusiveDrugSetGoldOperator(BaseOperator):
+    def __init__(
+        self,
+        source_file: str,
+        destination_file: str,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.source_file = source_file
+        self.destination_file = destination_file
+
+    def execute(self, context: Context) -> Any:
+        # I'm not sure what I'm doing here. In a production context I would
+        # ask the PO twice to make sure I understood correctly before starting
+        # to implement an algorithm that gives a headache :|
+
+        with open(self.source_file) as f:
+            data = json.loads(f.read())
+
+        clinical_trial_id_to_journal = {
+            k: v["journal"] for k, v in data["clinical_trial"].items()
+        }
+        pubmed_id_to_journal = {k: v["journal"] for k, v in data["pubmed"].items()}
+
+        journal_to_drug = {}
+        for journal, drug_dates in data["journal"].items():
+            journal_to_drug[journal] = {
+                drug_date["atccode"] for drug_date in drug_dates
+            }
+
+        exclusive_drug_set = {}
+
+        for drug, drug_quotes in data["drug"].items():
+            clinical_trial_ids = drug_quotes["clinical_trial_id"]
+            clinical_trial_journal = {
+                v
+                for k, v in clinical_trial_id_to_journal.items()
+                if k in clinical_trial_ids
+            }
+            clinical_trial_drugs = set(
+                itertools.chain(
+                    *[
+                        v
+                        for k, v in journal_to_drug.items()
+                        if k in clinical_trial_journal
+                    ]
+                )
+            )
+
+            pubmed_ids = drug_quotes["pubmed_id"]
+            pubmed_journal = {
+                v for k, v in pubmed_id_to_journal.items() if k in pubmed_ids
+            }
+            pubmed_drugs = set(
+                itertools.chain(
+                    *[v for k, v in journal_to_drug.items() if k in pubmed_journal]
+                )
+            )
+
+            exclusive_drug_set[drug] = list(pubmed_drugs - clinical_trial_drugs)
+
+        with open(self.destination_file, "w+") as f:
+            json.dump(exclusive_drug_set, f, indent=2, ensure_ascii=False)

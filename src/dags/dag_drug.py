@@ -13,6 +13,7 @@ from operator_drug import (
     PubmedMergeOperator,
     PubmedSilverOperator,
     TopQuoterGoldOperator,
+    ExclusiveDrugSetGoldOperator,
 )
 
 
@@ -137,6 +138,12 @@ with DAG(
         destination_file=constant.TOP_QUOTER_FILE,
     )
 
+    exclusive_drug_set_gold = ExclusiveDrugSetGoldOperator(
+        task_id="exclusive_drug_set_gold",
+        source_file=constant.DRUG_GRAPH_FILE,
+        destination_file=constant.EXCLUSIVE_DRUG_SET_FILE,
+    )
+
 
 drugs_sensor >> drugs_bronze >> drugs_silver >> drug_graph_gold
 (
@@ -147,7 +154,9 @@ drugs_sensor >> drugs_bronze >> drugs_silver >> drug_graph_gold
 )
 pubmed_a_sensor >> pubmed_a_bronze >> pubmed_merge_silver
 pubmed_b_sensor >> pubmed_b_bronze >> pubmed_merge_silver
-pubmed_merge_silver >> pubmed_silver >> drug_graph_gold >> top_quoter_gold
+pubmed_merge_silver >> pubmed_silver >> drug_graph_gold
+drug_graph_gold >> top_quoter_gold
+drug_graph_gold >> exclusive_drug_set_gold
 
 
 if __name__ == "__main__":
