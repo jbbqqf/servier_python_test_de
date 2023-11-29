@@ -124,6 +124,10 @@ with DAG(
 
     drug_graph_gold = DrugGraphGoldOperator(
         task_id="drug_graph_gold",
+        drug_source_file=constant.SILVER_DRUGS_FILE,
+        clinical_trials_file=constant.SILVER_CLINICAL_TRIALS_FILE,
+        pubmed_file=constant.SILVER_PUBMED_FILE,
+        destination_file=constant.DRUG_GRAPH_FILE,
     )
 
 

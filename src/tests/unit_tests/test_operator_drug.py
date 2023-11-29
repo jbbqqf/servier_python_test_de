@@ -38,7 +38,13 @@ def test_copy_file_operator() -> None:
 
 def test_drug_graph_gold_operator_operator() -> None:
     # Given
-    DrugGraphGoldOperator(task_id="test")
+    DrugGraphGoldOperator(
+        task_id="test",
+        drug_source_file="a",
+        clinical_trials_file="b",
+        pubmed_file="c",
+        destination_file="d",
+    )
 
     # When, Then
     """

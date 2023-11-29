@@ -23,4 +23,5 @@ SILVER_CLINICAL_TRIALS_FILE = os.path.join(SILVER_FOLDER, "clinical_trials.json"
 SILVER_PUBMED_MERGED_FILE = os.path.join(SILVER_FOLDER, "pubmed_merged.json")
 SILVER_PUBMED_FILE = os.path.join(SILVER_FOLDER, "pubmed.json")
 
-GOLD_FOLDER = os.path.join("data", "gold")
+GOLD_FOLDER = os.path.join(DAGS_FOLDER, "data", "gold")
+DRUG_GRAPH_FILE = os.path.join(GOLD_FOLDER, "drug_graph.json")
