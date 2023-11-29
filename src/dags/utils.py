@@ -17,13 +17,13 @@ def clean_hexadecimal_patterns(string: str) -> str:
     """
     Remove:
       - "\\xc3"
-      - "\\xb1 "
+      - "\\xc3"
       - "\xc3"
       - "\x28"
     """
 
-    first_hexadecimal_pattern = r"\\x[0-9a-fA-F]{2} ?"
-    second_hexadecimal_pattern = r"\\\\x[0-9a-fA-F]{2} ?"
+    first_hexadecimal_pattern = r"\\\\x[0-9a-fA-F]{2} ?"
+    second_hexadecimal_pattern = r"\\x[0-9a-fA-F]{2} ?"
 
     first_cleaned_string = re.sub(first_hexadecimal_pattern, "", string)
     second_cleaned_string = re.sub(second_hexadecimal_pattern, "", first_cleaned_string)

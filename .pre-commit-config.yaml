@@ -24,6 +24,7 @@ repos:
         name: bandit
         language: system
         entry: bandit
+        args: [-c, .bandit.yaml]
         types: ["python"]
 
       - id: mypy

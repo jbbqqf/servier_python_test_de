@@ -2,6 +2,7 @@ import os
 
 from airflow.configuration import conf
 
+
 DAGS_FOLDER = conf.get("core", "dags_folder")
 
 EXTERNAL_FOLDER = os.path.join(DAGS_FOLDER, "data", "external")
