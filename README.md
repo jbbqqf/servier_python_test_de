@@ -98,6 +98,19 @@ Run Airflow in local:
 airflow standalone
 ```
 
+Run tests:
+```
+pip install -r requirements-dev.txt
+
+pytest src/tests
+```
+
+Run linters:
+```
+pre-commit install
+pre-commit run --all-files
+```
+
 ## Procedures
 
 ### How to compile dependencies ?
