@@ -2,7 +2,7 @@ import os
 import re
 import shutil
 from typing import Any, List, Dict
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import json
 import json5
 import pandas as pd
@@ -276,3 +276,33 @@ class DrugGraphGoldOperator(BaseOperator):
 
         with open(self.destination_file, "w+") as f:
             json.dump(drug_graph, f, indent=2, ensure_ascii=False)
+
+
+class TopQuoterGoldOperator(BaseOperator):
+    def __init__(
+        self,
+        source_file: str,
+        destination_file: str,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.source_file = source_file
+        self.destination_file = destination_file
+
+    def execute(self, context: Context) -> Any:
+        with open(self.source_file) as f:
+            data = json.loads(f.read())
+
+        journal_to_drug_set = {}
+        for journal, journal_quotes in data["journal"].items():
+            journal_to_drug_set[journal] = {
+                drug_quote["drug"] for drug_quote in journal_quotes
+            }
+
+        top_quoter = {k: len(v) for k, v in journal_to_drug_set.items()}
+        ordered_top_quoter = OrderedDict(
+            sorted(top_quoter.items(), key=lambda x: x[1], reverse=True)
+        )
+
+        with open(self.destination_file, "w+") as f:
+            json.dump(ordered_top_quoter, f, indent=2, ensure_ascii=False)

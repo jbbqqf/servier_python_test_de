@@ -12,6 +12,7 @@ from operator_drug import (
     DrugsSilverOperator,
     PubmedMergeOperator,
     PubmedSilverOperator,
+    TopQuoterGoldOperator,
 )
 
 
@@ -130,6 +131,12 @@ with DAG(
         destination_file=constant.DRUG_GRAPH_FILE,
     )
 
+    top_quoter_gold = TopQuoterGoldOperator(
+        task_id="top_quoter_gold",
+        source_file=constant.DRUG_GRAPH_FILE,
+        destination_file=constant.TOP_QUOTER_FILE,
+    )
+
 
 drugs_sensor >> drugs_bronze >> drugs_silver >> drug_graph_gold
 (
@@ -140,7 +147,8 @@ drugs_sensor >> drugs_bronze >> drugs_silver >> drug_graph_gold
 )
 pubmed_a_sensor >> pubmed_a_bronze >> pubmed_merge_silver
 pubmed_b_sensor >> pubmed_b_bronze >> pubmed_merge_silver
-pubmed_merge_silver >> pubmed_silver >> drug_graph_gold
+pubmed_merge_silver >> pubmed_silver >> drug_graph_gold >> top_quoter_gold
+
 
 if __name__ == "__main__":
     # Allow developers to run "python src/dags/dag_drug.py" to test the dag in dev

@@ -5,6 +5,7 @@ from operator_drug import (
     DrugsSilverOperator,
     PubmedMergeOperator,
     PubmedSilverOperator,
+    TopQuoterGoldOperator,
 )
 
 
@@ -78,6 +79,17 @@ def test_pubmed_merge_silver_operator() -> None:
 def test_pubmed_silver_operator() -> None:
     # Given
     PubmedSilverOperator(task_id="test", source_file="a", destination_file="b")
+
+    # When, Then
+    """
+    I didn't take the time to implement this test because the rest
+    of the technical test was already heavy.
+    """
+
+
+def test_to_quoter_gold_operator() -> None:
+    # Given
+    TopQuoterGoldOperator(task_id="test", source_file="a", destination_file="b")
 
     # When, Then
     """

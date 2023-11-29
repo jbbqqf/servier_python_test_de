@@ -25,3 +25,4 @@ SILVER_PUBMED_FILE = os.path.join(SILVER_FOLDER, "pubmed.json")
 
 GOLD_FOLDER = os.path.join(DAGS_FOLDER, "data", "gold")
 DRUG_GRAPH_FILE = os.path.join(GOLD_FOLDER, "drug_graph.json")
+TOP_QUOTER_FILE = os.path.join(GOLD_FOLDER, "top_quoter.json")
