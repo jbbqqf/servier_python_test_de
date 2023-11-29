@@ -6,11 +6,20 @@ import pandas as pd
 from dateutil.parser import parse
 
 
+def generate_synthetic_id() -> str:
+    return str(uuid4())
+
+
 def ensure_id(id_: Any) -> str:
     """
-    Return a synthetic id if the value is not a string or an empty string.
+    Return a synthetic id if the value is not usable.
+    Ensure the returned value is a string.
     """
-    return id_ if isinstance(id_, str) and bool(id_) else str(uuid4())
+    if type(id_) is int:
+        return str(id_)
+    if isinstance(id_, str) and bool(id_):
+        return id_
+    return str(generate_synthetic_id())
 
 
 def clean_hexadecimal_patterns(string: str) -> str:

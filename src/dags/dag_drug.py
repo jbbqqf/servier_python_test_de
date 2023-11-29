@@ -134,9 +134,9 @@ drugs_sensor >> drugs_bronze >> drugs_silver >> drug_graph_gold
     >> clinical_trials_silver
     >> drug_graph_gold
 )
-pubmed_a_sensor >> pubmed_a_bronze >> pubmed_silver >> drug_graph_gold
-pubmed_b_sensor >> pubmed_b_bronze >> pubmed_silver >> drug_graph_gold
-
+pubmed_a_sensor >> pubmed_a_bronze >> pubmed_merge_silver
+pubmed_b_sensor >> pubmed_b_bronze >> pubmed_merge_silver
+pubmed_merge_silver >> pubmed_silver >> drug_graph_gold
 
 if __name__ == "__main__":
     # Allow developers to run "python src/dags/dag_drug.py" to test the dag in dev

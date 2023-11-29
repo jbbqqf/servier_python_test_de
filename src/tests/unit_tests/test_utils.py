@@ -2,15 +2,31 @@ import pytest
 from typing import Any
 import utils
 import numpy as np
+from pytest_mock.plugin import MockerFixture
 
 
-@pytest.mark.parametrize("id_", ["", 1, "abcd", np.nan])
-def test_ensure_id(id_: Any) -> None:
+@pytest.mark.parametrize(
+    "id_, expected_id",
+    [
+        ("", "aab5a5fb-fe8e-4509-9583-f02d0600dac8"),
+        (1, "1"),
+        ("abcd", "abcd"),
+        (np.nan, "aab5a5fb-fe8e-4509-9583-f02d0600dac8"),
+    ],
+)
+def test_ensure_id(mocker: MockerFixture, id_: Any, expected_id: str) -> None:
+    # Given
+    mocker.patch(
+        "utils.generate_synthetic_id",
+        return_value="aab5a5fb-fe8e-4509-9583-f02d0600dac8",
+    )
+
     # When
     transformed_id = utils.ensure_id(id_)
 
     # Then
     assert isinstance(transformed_id, str)
+    assert transformed_id == expected_id
 
 
 @pytest.mark.parametrize(
