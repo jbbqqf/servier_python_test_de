@@ -14,11 +14,11 @@ class CopyFileOperator(BaseOperator):
     # This will ease the rewrite because we will realistically not process local files in production.
     def __init__(
         self,
-        source_folder,
-        source_path,
-        destination_folder,
-        destination_path,
-        **kwargs,
+        source_folder: str,
+        source_path: str,
+        destination_folder: str,
+        destination_path: str,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.source_folder = source_folder
@@ -26,7 +26,7 @@ class CopyFileOperator(BaseOperator):
         self.destination_folder = destination_folder
         self.destination_path = destination_path
 
-    def execute(self, context) -> Any:
+    def execute(self, context: Context) -> Any:
         shutil.copyfile(
             os.path.join(self.source_folder, self.source_path),
             os.path.join(self.destination_folder, self.destination_path),
@@ -36,9 +36,9 @@ class CopyFileOperator(BaseOperator):
 class DrugsSilverOperator(BaseOperator):
     def __init__(
         self,
-        source_file,
-        destination_file,
-        **kwargs,
+        source_file: str,
+        destination_file: str,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.source_file = source_file
@@ -58,9 +58,9 @@ class DrugsSilverOperator(BaseOperator):
 class ClinicalTrialsSilverOperator(BaseOperator):
     def __init__(
         self,
-        source_file,
-        destination_file,
-        **kwargs,
+        source_file: str,
+        destination_file: str,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.source_file = source_file
@@ -91,7 +91,7 @@ class PubmedMergeOperator(BaseOperator):
         self,
         source_files: List[str],
         destination_file: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.source_files = source_files
@@ -109,7 +109,7 @@ class PubmedMergeOperator(BaseOperator):
                 with open(source_file) as f:
                     # json5 parses trailing commas found in pubmed files
                     data = json5.loads(f.read())
-                data_to_concat.append(pd.DataFrame.from_dict(data))
+                data_to_concat.append(pd.DataFrame.from_dict(data))  # type: ignore
 
             else:
                 # Do not let failures go undetected
@@ -124,9 +124,9 @@ class PubmedMergeOperator(BaseOperator):
 class PubmedSilverOperator(BaseOperator):
     def __init__(
         self,
-        source_file,
-        destination_file,
-        **kwargs,
+        source_file: str,
+        destination_file: str,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.source_file = source_file
@@ -155,7 +155,7 @@ class PubmedSilverOperator(BaseOperator):
 class DrugGraphGoldOperator(BaseOperator):
     def __init__(
         self,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
 

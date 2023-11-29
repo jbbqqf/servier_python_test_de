@@ -26,6 +26,14 @@ repos:
         entry: bandit
         types: ["python"]
 
+      - id: mypy
+        name: mypy
+        language: system
+        entry: mypy
+        args: [--config=./setup.cfg]
+        require_serial: true
+        types: ["python"]
+
       - id: ruff
         name: ruff
         language: system
